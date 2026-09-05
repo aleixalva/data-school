@@ -241,7 +241,7 @@ Tuu                1
 Name: language, dtype: int64
 ```
 
-### Which countries have the greatest number of distinct languages in the dataset?
+### Which countries have the greatest number of distinct languages?
 
 ```Bash
 $ mlr --csv cut -f language,country then uniq -f language,country \
@@ -283,3 +283,48 @@ South Sudan     23
 Mali            22
 Name: language, dtype: int64
 
+### Which language occurs in the greatest number of countries?
+
+```Bash
+$ mlr --csv cut -f country,language \
+    then uniq -f country,language \
+    then stats1 -a count -f country -g language \
+    then sort -nr country_count africa.csv | head
+language,country_count
+Arabic,12
+Fulani,10
+Mooré,8
+Soninke,8
+Gourmanché,6
+Lozi,6
+Bariba,5
+Khwe,5
+Mampruli,5
+```
+
+Python:
+
+```Python
+countries_per_language = (
+    df.groupby("language")["country"]
+    .nunique()
+    .sort_values(ascending=False)
+)
+
+countries_per_language.head(10)
+
+language
+Arabic        12
+Fulani        10
+Mooré          8
+Soninke        8
+Lozi           6
+Gourmanché     6
+Portuguese     5
+Khwe           5
+Swahili        5
+Bariba         5
+Name: country, dtype: int64
+```
+
+### Which language family has the largest total number of native speakers represented?
