@@ -106,7 +106,8 @@ print(df['country'].nunique())
 ### Which language has the largest number of native speakers?
 
 ```Bash
-$ mlr --csv stats1 -a sum -f native_speakers -g language then sort -nr native_speakers_sum africa.csv | head -n 2
+$ mlr --csv stats1 -a sum -f native_speakers -g language \
+    then sort -nr native_speakers_sum africa.csv | head -n 2
 language,native_speakers_sum
 Arabic,1800000000
 ```
@@ -116,8 +117,12 @@ This adds `native_speakers` grouped by `language`, and then sorts it numerically
 Pandas:
 
 ```Python
-df.groupby("language")["native_speakers"].sum().sort_values(asce
-       ⋮ nding=False).head(1)
+speakers_by_language = (
+    df.groupby("language")["native_speakers"]
+    .sum()
+    .sort_values(ascending=False)
+)
+speakers_by_language.head(1)
 
 language
 Arabic    1800000000
@@ -128,7 +133,10 @@ Arabic    1800000000
 Or, in other words, which family contains the largest number of distinct languages in this dataset?
 
 ```Bash
-$ mlr --csv cut -f language,family then sort -f family then uniq -f language,family then stats1 -a count -f language -g family then sort -nr language_count africa.csv
+$ mlr --csv cut -f language,family then sort -f family \
+    then uniq -f language,family \
+    then stats1 -a count -f language -g family \
+    then sort -nr language_count africa.csv
 family,language_count
 Niger–Congo,383
 Nilo-Saharan,70
@@ -153,7 +161,10 @@ Notice a problem: there is a coexistence of `Afroasiatic` and `Afro-Asiatic`. We
 
 ```Bash
 $ sed 's/Afro-Asiatic/Afroasiatic/' africa.csv > africa2.csv
-$ mlr --csv cut -f language,family then sort -f family then uniq -f family,language then  stats1 -a count -f language -g family then   sort -nr language_count  africa2.csv
+$ mlr --csv cut -f language,family then sort -f family \
+    then uniq -f family,language \
+    then  stats1 -a count -f language -g family then \
+    sort -nr language_count  africa2.csv
 family,language_count
 Niger–Congo,383
 Nilo-Saharan,70
@@ -208,8 +219,7 @@ df["family"]=df["family"].str.replace("Afro-Asiatic","Afroasiatic", regex=True)
 Then repeat the command:
 
 ```Python
-df.groupby("family")["language"].nunique().sort_values(ascending
-       ⋮ =False)
+df.groupby("family")["language"].nunique().sort_values(ascending=False)
 
 family
 Niger–Congo      383
@@ -231,4 +241,45 @@ Tuu                1
 Name: language, dtype: int64
 ```
 
+### Which countries have the greatest number of distinct languages in the dataset?
+
+```Bash
+$ mlr --csv cut -f language,country then uniq -f language,country \
+    then stats1 -a count -f language -g country \
+    then sort -nr language_count africa.csv | head
+country,language_count
+Cameroon,95
+Congo,79
+Nigeria,73
+Sudan,40
+Burkina Faso,36
+Ghana,34
+Namibia,24
+Chad,24
+South Sudan,23
+```
+
+Python:
+
+```Python
+languages_per_country = (
+    df.groupby("country")["language"]
+    .nunique()
+    .sort_values(ascending=False)
+)
+
+languages_per_country.head(10)
+
+country
+Cameroon        95
+Congo           79
+Nigeria         73
+Sudan           40
+Burkina Faso    36
+Ghana           34
+Chad            24
+Namibia         24
+South Sudan     23
+Mali            22
+Name: language, dtype: int64
 
