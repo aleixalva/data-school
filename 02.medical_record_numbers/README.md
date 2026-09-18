@@ -13,4 +13,3 @@ python deduplicate.txt
 Out of 1000 lines, there are just 123 unique patients
 ```
 
-We get 
