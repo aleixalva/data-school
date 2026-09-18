@@ -327,4 +327,47 @@ Bariba         5
 Name: country, dtype: int64
 ```
 
-### Which language family has the largest total number of native speakers represented?
+### Which language family has the largest total number of native speakers?
+
+```Bash
+$ mlr --csv cut -f family,native_speakers \
+    then stats1 -a sum -f native_speakers -g family \
+    then sort -nr native_speakers_sum africa2.csv | head -n 3
+
+family,native_speakers_sum
+Afroasiatic,2370654100
+Niger–Congo,1353163982
+```
+
+Python:
+
+```Python
+speakers_by_family = (
+    df.groupby("family")["native_speakers"]
+    .sum()
+    .sort_values(ascending=False
+)
+
+speakers_by_family.head(5)
+
+family
+Afroasiatic      2370654100
+Niger–Congo      1353163982
+Nilo-Saharan      111091000
+Indo-European     101665300
+Kongo-based        26000000
+```
+
+## Basic statistics
+
+### Explore the distribution of native speakers across languages
+
+```Bash
+$ mlr --csv cut -f language,native_speakers then stats1 -a sum -f native_speakers -g language then stats1 -a count,mean,median,min,max,stddev,p25,p75,p90,p99 -f native_speakers_sum africa2.csv
+
+native_speakers_sum_count,native_speakers_sum_mean,native_speakers_sum_median,native_speakers_sum_min,native_speakers_sum_max,native_speakers_sum_stddev,native_speakers_sum_p25,native_speakers_sum_p75,native_speakers_sum_p90,native_speakers_sum_p99
+502,7940292.39442231,73000,12,1800000000,83939222.96637799,15000,760000,6300000,109689700
+```
+
+
+
